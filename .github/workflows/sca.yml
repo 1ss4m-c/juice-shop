@@ -1,0 +1,24 @@
+name: SCA - npm audit
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+  schedule:
+    - cron: "0 6 * * 2"
+  workflow_dispatch:
+jobs:
+  sca:
+    name: SCA Dependency Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Run npm audit (fail on vulnerabilities)
+        run: npm audit --audit-level=high
