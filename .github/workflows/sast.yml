@@ -28,6 +28,19 @@ jobs:
           languages: ${{ matrix.language }}
           queries: security-extended
       - name: Perform CodeQL Analysis
+        id: analyze
         uses: github/codeql-action/analyze@v3
         with:
           category: "/language:${{ matrix.language }}"
+          output: sarif-results
+      - name: Fail on SAST findings
+        if: always()
+        run: |
+          SARIF_FILE=$(find sarif-results -name "*.sarif" | head -n 1)
+          echo "Checking SARIF file: $SARIF_FILE"
+          RESULTS=$(jq '[.runs[].results[]] | length' "$SARIF_FILE")
+          echo "Found $RESULTS SAST findings"
+          if [ "$RESULTS" -gt 0 ]; then
+            echo "::error::SAST scan found $RESULTS vulnerabilities - failing the pipeline"
+            exit 1
+          fi
