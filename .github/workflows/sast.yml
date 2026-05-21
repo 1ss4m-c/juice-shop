@@ -2,11 +2,12 @@ name: SAST - CodeQL
 
 on:
   push:
-    branches: [master, main]
+    branches: ["**"]
   pull_request:
-    branches: [master, main]
+    branches: ["**"]
   schedule:
     - cron: "0 6 * * 1"
+  workflow_dispatch:
 
 jobs:
   analyze:
